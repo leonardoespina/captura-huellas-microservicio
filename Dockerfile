@@ -1,22 +1,20 @@
-# Etapa 1: Construir la aplicación
-FROM maven:3.8.4-openjdk-11-slim AS builder
+# Etapa 1: Construir con Maven
+FROM maven:3.8.4-openjdk-21-slim AS builder
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Imagen de ejecución ligera
-FROM openjdk:11-jre-slim
+# Etapa 2: Ejecutar con JRE más ligero
+FROM openjdk:21-jre-slim
 WORKDIR /app
-
-# Copiar el JAR desde la etapa de construcción
 COPY --from=builder /app/target/*.jar app.jar
 
-# Exponer puerto (Render usará la variable PORT)
+# Exponer puerto (Render manejará la variable PORT)
 EXPOSE 8080
 
-# Variables de entorno por defecto
-ENV JAVA_OPTS="-Xmx256m"
+# Variables de entorno
+ENV JAVA_OPTS="-Xmx256m -Xms128m"
 
-# Comando de inicio (importante: usa exec form)
+# Comando de inicio
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
