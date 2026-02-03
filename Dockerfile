@@ -10,7 +10,8 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copiar el JAR desde la etapa de construcción
-COPY --from=builder /app/target/*.jar app.jar
+# Usamos el JAR generado por el shade plugin que contiene todas las dependencias y el manifiesto
+COPY --from=builder /app/target/biometric-service-1.0-SNAPSHOT.jar app.jar
 
 # Exponer puerto (Render usará la variable PORT)
 EXPOSE 8080
