@@ -10,10 +10,14 @@ public class App {
         // Inicializar servicio biométrico
         BiometricService biometricService = new BiometricService();
 
-        // Iniciar Javalin en puerto 7000
+        // Obtener puerto de variable de entorno (Render) o usar 7000 por defecto // CAMBIO AQUÍ
+        String portEnv = System.getenv("PORT"); // CAMBIO AQUÍ
+        int port = portEnv != null ? Integer.parseInt(portEnv) : 7000; // CAMBIO AQUÍ
+        
+        // Iniciar Javalin en el puerto configurado // CAMBIO AQUÍ
         Javalin app = Javalin.create(config -> {
             config.http.maxRequestSize = 50 * 1024 * 1024; // 50MB max body size
-        }).start(7000);
+        }).start(port); // CAMBIO AQUÍ: 7000 → port
 
         // Endpoint de verificación
         app.post("/api/verify", ctx -> {
@@ -48,6 +52,6 @@ public class App {
         // Endpoint de salud
         app.get("/health", ctx -> ctx.result("OK"));
 
-        System.out.println("🚀 Microservicio Biométrico corriendo en http://localhost:7000");
+        System.out.println("🚀 Microservicio Biométrico corriendo en http://localhost:" + port); // CAMBIO AQUÍ: muestra puerto dinámico
     }
 }
